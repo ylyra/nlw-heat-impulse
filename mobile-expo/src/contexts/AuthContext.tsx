@@ -44,7 +44,7 @@ export const AuthContext = React.createContext({} as AuthContextProps);
 
 export function AuthProvider(props: AuthProviderProps) {
   const [user, setUser] = React.useState<User | null>(null);
-  const [isSigningIn, setIsSigningIn] = React.useState(true);
+  const [isSigningIn, setIsSigningIn] = React.useState(false);
 
   const signIn = async () => {
     try {
