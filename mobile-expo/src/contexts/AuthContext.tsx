@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as AuthSessions from "expo-auth-session";
 
@@ -62,11 +62,14 @@ export function AuthProvider(props: AuthProviderProps) {
           code: authSessionResponse.params.code,
         });
 
-        await AsyncStorage.setItem(TOKEN_STORAGE, authResponse.data.token);
-        await AsyncStorage.setItem(
-          USER_STORAGE,
-          JSON.stringify(authResponse.data.user)
-        );
+        api.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${authResponse.data.token}`;
+        await AsyncStorage.multiSet([
+          [TOKEN_STORAGE, authResponse.data.token],
+          [USER_STORAGE, JSON.stringify(authResponse.data.user)],
+        ]);
+
         setUser(authResponse.data.user);
       }
     } catch (error) {
@@ -81,6 +84,21 @@ export function AuthProvider(props: AuthProviderProps) {
     await AsyncStorage.removeItem(USER_STORAGE);
     setUser(null);
   };
+
+  useEffect(() => {
+    async function loadStorageData() {
+      const [token, user] = await AsyncStorage.multiGet([
+        TOKEN_STORAGE,
+        USER_STORAGE,
+      ]);
+
+      if (token[1] && user[1]) {
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        setUser(JSON.parse(user[1]));
+      }
+    }
+    loadStorageData();
+  }, []);
 
   const values = {
     user,
