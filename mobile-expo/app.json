@@ -3,6 +3,7 @@
     "name": "mobileexpo",
     "slug": "mobileexpo",
     "version": "1.0.0",
+    "scheme": "mobileexpo",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
